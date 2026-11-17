@@ -36,7 +36,7 @@ def build_pdf(result: dict, title: str, dataset_name: str, source: str, positive
     headers = ["Group", "n", "Selection rate", "TPR", "FPR", "FNR"]
     rows = [headers]
     for row in result["groups"]:
-        rows.append([escape(str(row["group"])), str(row["n"]), f"{row['selection_rate']:.4f}", _fmt(row.get("tpr")), _fmt(row.get("fpr")), _fmt(row.get("fnr"))])
+        rows.append([str(row["group"]), str(row["n"]), f"{row['selection_rate']:.4f}", _fmt(row.get("tpr")), _fmt(row.get("fpr")), _fmt(row.get("fnr"))])
     story.append(_table(rows, [2.4*inch, .55*inch, 1.0*inch, .8*inch, .8*inch, .8*inch], font=8))
     m = result["metrics"]
     story += [Spacer(1, 14), Paragraph("Summary metrics", styles["Heading2"])]
@@ -64,7 +64,7 @@ def _fmt(value) -> str:
 
 
 def _table(data, widths, font=9):
-    wrapped = [[Paragraph(str(v), getSampleStyleSheet()["BodyText"]) for v in row] for row in data]
+    wrapped = [[Paragraph(escape(str(v)), getSampleStyleSheet()["BodyText"]) for v in row] for row in data]
     table = Table(wrapped, colWidths=widths, repeatRows=1 if len(data) > 1 else 0, hAlign="LEFT")
     table.setStyle(TableStyle([
         ("BACKGROUND", (0,0),(-1,0), colors.HexColor("#eaf0ed")),

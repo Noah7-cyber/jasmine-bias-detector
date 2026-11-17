@@ -2,14 +2,14 @@
 
 ## Requirements
 
-Python 3.11 or newer and a modern browser. Create a dedicated environment in this directory; do not use the coursework environment.
+Python 3.12 and a modern browser. Create a dedicated environment in this directory; do not use the coursework environment. For the hosted Flask interface, install `requirements.txt` and run `python -m flask --app app run`. Vercel loads the exported WSGI `app` automatically. For the Streamlit research interface and evaluation tools, use the following commands.
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-research.txt
 .\.venv\Scripts\python.exe scripts/prepare_public_data.py
 .\.venv\Scripts\python.exe scripts/generate_synthetic.py
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
+.\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.address 127.0.0.1
 ```
 
 The preparation command downloads COMPAS and UCI Adult data in memory, removes COMPAS direct identifiers before writing the offline sample, fits an untuned Adult logistic regression on the training partition, and saves only held-out predictions with selected demographic fields. Raw source downloads and uploaded rows are not written to disk. Sample preparation requires a network connection; the launched app can run offline after preparation.

@@ -2,7 +2,7 @@ from streamlit.testing.v1 import AppTest
 
 
 def test_sample_to_analysis_to_results_flow():
-    app=AppTest.from_file("app.py",default_timeout=30).run()
+    app=AppTest.from_file("streamlit_app.py",default_timeout=30).run()
     assert not app.exception
     assert app.title[0].value=="AI Bias Detector"
     app.button[0].click().run()
@@ -24,7 +24,7 @@ def test_sample_to_analysis_to_results_flow():
 
 
 def test_upload_screen_renders_with_pinned_streamlit():
-    app = AppTest.from_file("app.py", default_timeout=30).run()
+    app = AppTest.from_file("streamlit_app.py", default_timeout=30).run()
     next(widget for widget in app.radio if widget.label == "Data source").set_value("Upload a CSV").run()
     assert not app.exception
     assert len(app.get("file_uploader")) == 1
@@ -32,7 +32,7 @@ def test_upload_screen_renders_with_pinned_streamlit():
 
 
 def test_continue_navigation_and_clear_dataset():
-    app = AppTest.from_file("app.py", default_timeout=30).run()
+    app = AppTest.from_file("streamlit_app.py", default_timeout=30).run()
     next(button for button in app.button if button.label == "Load sample").click().run()
     next(button for button in app.button if button.label == "Continue to analysis").click().run()
     assert app.sidebar.radio[0].value == "Analysis"

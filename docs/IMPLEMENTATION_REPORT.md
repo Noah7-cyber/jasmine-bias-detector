@@ -38,7 +38,15 @@ A real CSV upload was exercised in Edge through Analysis and Results with zero r
 ## Local launch
 
 ```powershell
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
+.\.venv\Scripts\python.exe -m streamlit run streamlit_app.py --server.address 127.0.0.1
 ```
 
 Dataset preparation and test commands are in [`APP_GUIDE.md`](APP_GUIDE.md).
+
+## Vercel deployment correction
+
+The original Streamlit script could not serve as a Vercel WSGI entrypoint. `app.py` now exports the Flask application from `server.py`; the original research UI is retained in `streamlit_app.py`. `pyproject.toml` explicitly selects `app:app` and Python 3.12, and `vercel.json` selects the Flask preset. Runtime dependencies are limited to Flask, pandas, NumPy, SciPy, Plotly and ReportLab; Streamlit and verification/preparation dependencies live in `requirements-research.txt`. All bundled samples remain available without build-time downloads.
+
+The hosted interface uses the existing metric engine and ReportLab generator. No uploads, reports or server sessions are persisted. Each analysis/report request carries either a fixed sample key or the CSV retained in browser memory. The hosted CSV limit is 3 MiB to allow JSON overhead below the platform request limit. Refreshing or clearing removes browser-held data. Local Streamlit retains its 25 MiB upload limit.
+
+Verification: all 39 tests passed after entrypoint migration; a subsequent PDF escaping regression was added and the server/report tests passed. Edge exercised COMPAS loading, charts, uploaded-CSV manual metric values and a real PDF download with no page errors. Desktop and mobile were visually inspected. The Vercel schema recognises the Flask preset. Public deployment success is tracked separately from these local checks; it requires Vercel to build the pushed commit.

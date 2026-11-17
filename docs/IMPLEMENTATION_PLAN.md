@@ -69,7 +69,9 @@ Data: bundled public samples + seeded synthetic fixtures
 
 | Implemented file/module | Responsibility |
 | --- | --- |
-| `app.py` | Four-stage Streamlit workflow, session state, Plotly charts and plain-language explanations |
+| `app.py`, `server.py` | Vercel WSGI entrypoint and stateless Python web endpoints |
+| `streamlit_app.py` | Original four-stage Streamlit research workflow |
+| `templates/`, `static/` | Hosted research workbench UI with local Plotly charts |
 | `bias_detector/data_loader.py` | Read uploaded CSV bytes in memory and detect duplicate raw headers |
 | `bias_detector/validation.py` | Inspect missing values and validate binary mappings |
 | `bias_detector/metrics.py` | Pure group counts, formulas, z-test, reliability checks, thresholds and decision messages |

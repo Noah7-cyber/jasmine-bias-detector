@@ -1,11 +1,6 @@
-streamlit==1.50.0
+Flask==3.1.2
 pandas==2.3.3
 numpy==2.3.4
 scipy==1.15.3
 plotly==6.3.1
 reportlab==4.4.4
-fairlearn==0.13.0
-scikit-learn==1.7.2
-pytest==8.4.2
-requests==2.32.5
-pymupdf==1.26.5

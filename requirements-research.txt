@@ -1,0 +1,7 @@
+-r requirements.txt
+streamlit==1.50.0
+fairlearn==0.13.0
+scikit-learn==1.7.2
+pytest==8.4.2
+requests==2.32.5
+pymupdf==1.26.5

@@ -1,0 +1,9 @@
+.venv
+.git
+.impeccable
+.pytest_cache
+__pycache__
+**/__pycache__
+.env*
+*.log
+*.png
