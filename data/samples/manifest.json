@@ -1,0 +1,53 @@
+{
+  "retrieved_utc": "2026-11-17T10:55:34.154464+00:00",
+  "adult_source": "https://archive.ics.uci.edu/dataset/2/adult",
+  "compas_source": "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv",
+  "adult_train_sha256": "5b00264637dbfec36bdeaab5676b0b309ff9eb788d63554ca0a249491c86603d",
+  "adult_test_sha256": "a2a9044bc167a35b2361efbabec64e89d69ce82d9790d2980119aac5fd7e9c05",
+  "compas_sha256": "c451db85908b2f7fef1d83203bedf6b71ecda0d5af468d82ae62178f91d0cc7d",
+  "compas_raw_shape": [
+    7214,
+    53
+  ],
+  "compas_prepared_shape": [
+    6172,
+    5
+  ],
+  "compas_filter_counts": {
+    "raw": 7214,
+    "screening_window": 6172,
+    "not_recidivist_missing": 6172,
+    "final": 6172
+  },
+  "adult_train_rows_raw": 32561,
+  "adult_train_rows_complete_for_baseline": 30162,
+  "adult_test_rows_raw": 16281,
+  "adult_holdout_rows_complete": 15060,
+  "adult_baseline": {
+    "estimator": "untuned LogisticRegression",
+    "random_state": 42,
+    "max_iter": 1200,
+    "features": [
+      "age",
+      "workclass",
+      "fnlwgt",
+      "education",
+      "education_num",
+      "marital_status",
+      "occupation",
+      "relationship",
+      "race",
+      "sex",
+      "capital_gain",
+      "capital_loss",
+      "hours_per_week",
+      "native_country"
+    ],
+    "train_only_fit": true,
+    "heldout_only_predictions": true
+  },
+  "positive_meaning": {
+    "compas": "higher recidivism risk; adverse flag",
+    "adult": "income over $50,000"
+  }
+}

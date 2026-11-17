@@ -1,0 +1,373 @@
+{
+  "cases": 600,
+  "overall_expected_status_accuracy_pct": 100.0,
+  "binary_dp_detection_s1_s4": {
+    "n": 400,
+    "tp": 200,
+    "tn": 200,
+    "fp": 0,
+    "fn": 0,
+    "accuracy_pct": 100.0,
+    "precision_pct": 100.0,
+    "recall_pct": 100.0
+  },
+  "scenario_results": {
+    "S1 \u2014 Equal rates": {
+      "n": 100,
+      "expected_status": "no_dp_flag",
+      "correct": 100,
+      "accuracy_pct": 100.0,
+      "mean_seconds": 0.04513473099214025
+    },
+    "S2 \u2014 Below threshold": {
+      "n": 100,
+      "expected_status": "no_dp_flag",
+      "correct": 100,
+      "accuracy_pct": 100.0,
+      "mean_seconds": 0.03382980199414305
+    },
+    "S3 \u2014 Moderate disparity": {
+      "n": 100,
+      "expected_status": "supported_dp_flag",
+      "correct": 100,
+      "accuracy_pct": 100.0,
+      "mean_seconds": 0.02581369300140068
+    },
+    "S4 \u2014 Large disparity": {
+      "n": 100,
+      "expected_status": "supported_dp_flag",
+      "correct": 100,
+      "accuracy_pct": 100.0,
+      "mean_seconds": 0.023714914007578046
+    },
+    "S5 \u2014 Small group": {
+      "n": 100,
+      "expected_status": "insufficient_data",
+      "correct": 100,
+      "accuracy_pct": 100.0,
+      "mean_seconds": 0.015147773005301133
+    },
+    "S6 \u2014 Error-rate disparity": {
+      "n": 100,
+      "expected_status": "equal_opportunity_flag_only",
+      "correct": 100,
+      "accuracy_pct": 100.0,
+      "mean_seconds": 0.018468181991484017
+    }
+  },
+  "interpretation": "Expected-status accuracy spans the binary DP cases, insufficient-data abstentions, and the equal-opportunity case. Binary DP precision/recall/accuracy are separately calculated over S1-S4 (400 cases).",
+  "performance_benchmarks": {
+    "COMPAS": {
+      "rows": 6172,
+      "runs": 10,
+      "mean_analysis_and_chart_build_seconds": 0.10304943002993242,
+      "max_seconds": 0.1517211999744177
+    },
+    "Adult held-out": {
+      "rows": 15060,
+      "runs": 10,
+      "mean_analysis_and_chart_build_seconds": 0.19127820000285284,
+      "max_seconds": 0.2836246999213472
+    },
+    "Adult 48,842-row stress fixture": {
+      "rows": 48842,
+      "runs": 10,
+      "mean_metric_seconds": 0.1837599999969825,
+      "max_metric_seconds": 0.29522980004549026,
+      "note": "Rows are repeated from the held-out Adult sample for speed testing only, not independent people; excluded from fairness evaluation."
+    }
+  },
+  "fairlearn_reference_checks": {
+    "COMPAS": {
+      "comparisons": 21,
+      "within_tolerance": 21,
+      "accuracy_pct": 100.0,
+      "mae": 0.0,
+      "maximum_absolute_error": 0.0,
+      "details": [
+        {
+          "metric": "selection_rate",
+          "group": "African-American",
+          "app": 0.5760629921259842,
+          "reference": 0.5760629921259842,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "African-American",
+          "app": 0.7152317880794702,
+          "reference": 0.7152317880794702,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "African-American",
+          "app": 0.4233817701453104,
+          "reference": 0.4233817701453104,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Asian",
+          "app": 0.22580645161290322,
+          "reference": 0.22580645161290322,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Asian",
+          "app": 0.625,
+          "reference": 0.625,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Asian",
+          "app": 0.08695652173913043,
+          "reference": 0.08695652173913043,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Caucasian",
+          "app": 0.3309557774607703,
+          "reference": 0.3309557774607703,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Caucasian",
+          "app": 0.5036496350364964,
+          "reference": 0.5036496350364964,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Caucasian",
+          "app": 0.22014051522248243,
+          "reference": 0.22014051522248243,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Hispanic",
+          "app": 0.2770137524557957,
+          "reference": 0.2770137524557957,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Hispanic",
+          "app": 0.41798941798941797,
+          "reference": 0.41798941798941797,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Hispanic",
+          "app": 0.19375,
+          "reference": 0.19375,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Native American",
+          "app": 0.7272727272727273,
+          "reference": 0.7272727272727273,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Native American",
+          "app": 1.0,
+          "reference": 1.0,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Native American",
+          "app": 0.5,
+          "reference": 0.5,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Other",
+          "app": 0.20408163265306123,
+          "reference": 0.20408163265306123,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Other",
+          "app": 0.3387096774193548,
+          "reference": 0.3387096774193548,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Other",
+          "app": 0.1278538812785388,
+          "reference": 0.1278538812785388,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "demographic_parity_difference",
+          "group": "all groups",
+          "app": 0.5231910946196661,
+          "reference": 0.5231910946196661,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "disparate_impact_ratio",
+          "group": "all groups",
+          "app": 0.28061224489795916,
+          "reference": 0.28061224489795916,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "equalised_odds_difference",
+          "group": "all groups",
+          "app": 0.6612903225806452,
+          "reference": 0.6612903225806452,
+          "absolute_error": 0.0
+        }
+      ]
+    },
+    "Adult held-out": {
+      "comparisons": 18,
+      "within_tolerance": 18,
+      "accuracy_pct": 100.0,
+      "mae": 0.0,
+      "maximum_absolute_error": 0.0,
+      "details": [
+        {
+          "metric": "selection_rate",
+          "group": "Amer-Indian-Eskimo",
+          "app": 0.04697986577181208,
+          "reference": 0.04697986577181208,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Amer-Indian-Eskimo",
+          "app": 0.2631578947368421,
+          "reference": 0.2631578947368421,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Amer-Indian-Eskimo",
+          "app": 0.015384615384615385,
+          "reference": 0.015384615384615385,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Asian-Pac-Islander",
+          "app": 0.25980392156862747,
+          "reference": 0.25980392156862747,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Asian-Pac-Islander",
+          "app": 0.6611570247933884,
+          "reference": 0.6611570247933884,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Asian-Pac-Islander",
+          "app": 0.09059233449477352,
+          "reference": 0.09059233449477352,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Black",
+          "app": 0.09071580439404678,
+          "reference": 0.09071580439404678,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Black",
+          "app": 0.5,
+          "reference": 0.5,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Black",
+          "app": 0.035398230088495575,
+          "reference": 0.035398230088495575,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "Other",
+          "app": 0.09836065573770492,
+          "reference": 0.09836065573770492,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "Other",
+          "app": 0.4166666666666667,
+          "reference": 0.4166666666666667,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "Other",
+          "app": 0.02040816326530612,
+          "reference": 0.02040816326530612,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "selection_rate",
+          "group": "White",
+          "app": 0.21603700848111027,
+          "reference": 0.21603700848111027,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "tpr",
+          "group": "White",
+          "app": 0.6089667458432304,
+          "reference": 0.6089667458432304,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "fpr",
+          "group": "White",
+          "app": 0.07821287231826703,
+          "reference": 0.07821287231826703,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "demographic_parity_difference",
+          "group": "all groups",
+          "app": 0.2128240557968154,
+          "reference": 0.2128240557968154,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "disparate_impact_ratio",
+          "group": "all groups",
+          "app": 0.18082816259338988,
+          "reference": 0.18082816259338988,
+          "absolute_error": 0.0
+        },
+        {
+          "metric": "equalised_odds_difference",
+          "group": "all groups",
+          "app": 0.39799913005654636,
+          "reference": 0.39799913005654636,
+          "absolute_error": 0.0
+        }
+      ]
+    }
+  }
+}
