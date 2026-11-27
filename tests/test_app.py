@@ -12,7 +12,7 @@ def test_sample_to_analysis_to_results_flow():
     assert not app.exception
     app.sidebar.radio[0].set_value("Results").run()
     assert not app.exception
-    assert {metric.label for metric in app.metric} >= {"Rows analysed","DP difference","Impact ratio"}
+    assert {metric.label for metric in app.metric} >= {"Rows analysed","All-group DPD (descriptive)","All-group DIR (descriptive)"}
     assert len(app.get("plotly_chart")) >= 1
     app.sidebar.radio[0].set_value("Analysis").run()
     next(widget for widget in app.number_input if widget.label=="DPD screen").set_value(0.20).run()

@@ -263,14 +263,16 @@ elif current_page == "Results":
             st.caption("Positive class: " + str(st.session_state.get("positive_description", "the configured positive outcome")))
         one, two, three, four = st.columns(4)
         one.metric("Rows analysed", f"{m['rows_analysed']:,}")
-        two.metric("DP difference", _format(m["demographic_parity_difference"]))
-        three.metric("Impact ratio", _format(m["disparate_impact_ratio"]))
+        two.metric("All-group DPD (descriptive)", _format(m["demographic_parity_difference"]))
+        three.metric("All-group DIR (descriptive)", _format(m["disparate_impact_ratio"]))
         four.metric("Minimum group", str(m["settings"]["minimum_group_size"]))
-        st.write(m["decision_dpd"])
-        if m["decision_dir"] != m["decision_dpd"]:
-            st.write(m["decision_dir"])
-        if m["selection_rate_comparison"]["sparse_expected_cell"]:
-            st.warning("At least one expected cell in the selection-rate test is below 5. Interpret the normal-approximation p-value cautiously.")
+        e = m["eligible_screening"]
+        st.write(e["message"])
+        if e["excluded_groups"]:
+            st.warning("Insufficient group data: " + ", ".join(e["excluded_groups"]))
+        st.write(f"Eligible extremes: {e['high_group']} vs {e['low_group']}; DPD={_format(e['dpd'])}; DIR={_format(e['dir'])}")
+        with st.expander("Eligible pairwise statistical comparisons"):
+            st.dataframe(pd.DataFrame(e["pairs"]), hide_index=True)
         st.subheader("Positive prediction rate by group")
         group_df = pd.DataFrame(result["groups"])
         fig = px.bar(group_df, x="group", y="selection_rate", text=group_df["selection_rate"].map(lambda v:f"{v:.1%}"),
@@ -279,7 +281,7 @@ elif current_page == "Results":
         st.plotly_chart(fig, config={"responsive": True})
         st.dataframe(group_df, width="stretch", hide_index=True)
         comp = m["selection_rate_comparison"]
-        st.caption(f"Two-sided selection-rate test compares {comp['high_group']} (highest rate) and {comp['low_group']} (lowest rate): z = {_format(comp['z'])}, p = {_format(comp['p_value_two_sided'])}. A z-test is not calculated for error-rate gaps.")
+        st.caption(f"All-group descriptive extremes: {comp['high_group']} vs {comp['low_group']}. Statistical screening uses eligible pairs only.")
         if m["true_positive_rate"] is not None:
             st.subheader("Error rates by group")
             rate_rows=[]

@@ -33,23 +33,31 @@ def build_pdf(result: dict, title: str, dataset_name: str, source: str, positive
               ["DIR screen", f"< {settings['dir_threshold']:.3f}"], ["Minimum group size", str(settings["minimum_group_size"])]]
     story.append(_table(config, [2.05*inch, 4.95*inch]))
     story += [Spacer(1, 14), Paragraph("Group results", styles["Heading2"])]
-    headers = ["Group", "n", "Selection rate", "TPR", "FPR", "FNR"]
+    headers = ["Group", "n", "Selection rate", "TPR", "FPR", "FNR", "Sample status"]
     rows = [headers]
     for row in result["groups"]:
-        rows.append([str(row["group"]), str(row["n"]), f"{row['selection_rate']:.4f}", _fmt(row.get("tpr")), _fmt(row.get("fpr")), _fmt(row.get("fnr"))])
-    story.append(_table(rows, [2.4*inch, .55*inch, 1.0*inch, .8*inch, .8*inch, .8*inch], font=8))
+        rows.append([str(row["group"]), str(row["n"]), f"{row['selection_rate']:.4f}", _fmt(row.get("tpr")), _fmt(row.get("fpr")), _fmt(row.get("fnr")), row.get("sample_status", "")])
+    story.append(_table(rows, [1.4*inch, .55*inch, 1.0*inch, .65*inch, .65*inch, .65*inch, 1.5*inch], font=8))
     m = result["metrics"]
     story += [Spacer(1, 14), Paragraph("Summary metrics", styles["Heading2"])]
     metric_rows = [["Metric", "Value", "Interpretation"]]
     metric_rows.extend([
-        ["Demographic parity difference", _fmt(m["demographic_parity_difference"]), m["decision_dpd"]],
-        ["Disparate impact ratio", _fmt(m["disparate_impact_ratio"]), m["decision_dir"]],
+        ["All-group DPD", _fmt(m["demographic_parity_difference"]), "Descriptive; includes small groups."],
+        ["All-group DIR", _fmt(m["disparate_impact_ratio"]), "Descriptive; includes small groups."],
         ["Equal opportunity difference", _fmt(m["equal_opportunity_difference"]), "Gap between highest and lowest group TPR."],
         ["Equalised odds difference", _fmt(m["equalised_odds_difference"]), "Larger of the TPR and FPR gaps."],
     ])
     story.append(_table(metric_rows, [1.65*inch, .72*inch, 4.55*inch], font=7.5))
     comp = m["selection_rate_comparison"]
-    story += [Spacer(1, 10), Paragraph(f"Two-sided selection-rate test: highest group {escape(str(comp['high_group']))}; lowest group {escape(str(comp['low_group']))}; z={_fmt(comp['z'])}; p={_fmt(comp['p_value_two_sided'])}.", styles["BodyText"])]
+    story += [Spacer(1, 10), Paragraph(f"All-group descriptive extremes: {escape(str(comp['high_group']))} vs {escape(str(comp['low_group']))}.", styles["BodyText"])]
+    e = m["eligible_screening"]
+    story += [Paragraph("Eligible-group screening", styles["Heading2"]),
+              Paragraph(escape(e["message"]), styles["BodyText"]),
+              Paragraph(escape(f"Excluded: {', '.join(e['excluded_groups']) or 'None'}. Eligible extremes: {e['high_group']} vs {e['low_group']}. DPD={_fmt(e['dpd'])}; DIR={_fmt(e['dir'])}."), styles["BodyText"])]
+    for pair in e["pairs"]:
+        adjusted = pair["adjusted_p"]
+        p_text = "Unavailable" if adjusted is None else ("Below numerical precision" if adjusted == 0 else f"{adjusted:.4e}")
+        story.append(Paragraph(escape(f"{pair['high_group']} vs {pair['low_group']}: DPD={_fmt(pair['dpd'])}; DIR={_fmt(pair['dir'])}; z={_fmt(pair['z'])}; adjusted p={p_text}. {pair['status']}."), styles["SmallNote"]))
     if m["undefined"]:
         story += [Spacer(1, 8), Paragraph("Unavailable measures", styles["Heading2"])]
         story += [Paragraph(escape(item), styles["SmallNote"]) for item in m["undefined"]]
