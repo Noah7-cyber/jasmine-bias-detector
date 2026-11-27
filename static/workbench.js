@@ -86,18 +86,26 @@ function metricList(id, pairs) {
 async function renderResults() {
   const {result, metadata} = analysis, m=result.metrics, groups=result.groups;
   $("positive-meaning").textContent = `Positive class: ${metadata.positive}.${metadata.adverse ? " This is an adverse risk flag, not a favourable selection." : ""}`;
-  metricList("metrics", [["Rows analysed",m.rows_analysed.toLocaleString()],["DP difference",fmt(m.demographic_parity_difference)],["Impact ratio",fmt(m.disparate_impact_ratio)],["Minimum group",m.settings.minimum_group_size]]);
+  metricList("metrics", [["Rows analysed",m.rows_analysed.toLocaleString()],["All-group DPD (descriptive)",fmt(m.demographic_parity_difference)],["All-group DIR (descriptive)",fmt(m.disparate_impact_ratio)],["Eligible-group DPD",fmt(m.eligible_screening.dpd)],["Eligible-group DIR",fmt(m.eligible_screening.dir)],["Minimum group",m.settings.minimum_group_size]]);
   $("decisions").replaceChildren();
-  const messages=[...new Set([m.decision_dpd,m.decision_dir])];
-  if(m.selection_rate_comparison.sparse_expected_cell) messages.push("Expected counts below 5 make the normal-approximation significance test unreliable. Interpret its p-value cautiously.");
+  const e=m.eligible_screening; const messages=[e.message, ...(e.excluded_groups.length ? ["Insufficient group data: "+e.excluded_groups.join(", ")] : [])];
+  
   messages.forEach(message => {const p=document.createElement("p"); p.textContent=message; if(!m.reliable || m.demographic_parity_flag || m.disparate_impact_flag) p.className="warning"; $("decisions").append(p);});
-  const keys=["group","n","selection_rate",...(m.true_positive_rate !== null ? ["tpr","fpr","fnr"]:[])];
-  const headings={group:"Group",n:"Rows",selection_rate:"Selection rate",tpr:"TPR",fpr:"FPR",fnr:"FNR"};
+  const keys=["group","n","sample_status","selection_rate",...(m.true_positive_rate !== null ? ["tpr","fpr","fnr"]:[])];
+  const headings={group:"Group",n:"Rows",sample_status:"Sample status",selection_rate:"Selection rate",tpr:"TPR",fpr:"FPR",fnr:"FNR"};
   const table=$("group-table"); table.querySelector("thead").replaceChildren();table.querySelector("tbody").replaceChildren();
   const tr=document.createElement("tr");keys.forEach(key=>{const th=document.createElement("th");th.scope="col";th.textContent=headings[key];tr.append(th);});table.querySelector("thead").append(tr);
-  groups.forEach(group=>{const tr=document.createElement("tr");keys.forEach(key=>{const td=document.createElement("td");td.textContent=["group","n"].includes(key)?group[key]:fmt(group[key]);tr.append(td);});table.querySelector("tbody").append(tr);});
+  groups.forEach(group=>{const tr=document.createElement("tr");keys.forEach(key=>{const td=document.createElement("td");td.textContent=["group","n","sample_status"].includes(key)?group[key]:fmt(group[key]);tr.append(td);});table.querySelector("tbody").append(tr);});
   const comp=m.selection_rate_comparison;
-  $("statistic").textContent=`Highest/lowest selection-rate comparison: ${comp.high_group} vs ${comp.low_group}. Two-sided z = ${fmt(comp.z)}, p = ${fmt(comp.p_value_two_sided)}. For very small nonzero p-values, the displayed value may round to zero.`;
+  const pFmt=v=>v===null || v===undefined ? "Unavailable" : (v===0 ? "Below numerical precision" : v.toExponential(4));
+  $("statistic").textContent=`All-group descriptive extremes: ${comp.high_group} vs ${comp.low_group}. `+
+    (e.high_group ? `Eligible-group extremes: ${e.high_group} vs ${e.low_group}.` : "No eligible comparison.");
+  const details=document.createElement("details"); const summary=document.createElement("summary");
+  summary.textContent="Eligible pairwise statistical comparisons"; details.append(summary);
+  const pairTable=document.createElement("table"), head=document.createElement("tr");
+  ["Higher rate","Lower rate","DPD","DIR","Z","Raw p","Adjusted p","Interpretation"].forEach(v=>{const th=document.createElement("th");th.scope="col";th.textContent=v;head.append(th);});
+  const thead=document.createElement("thead");thead.append(head);pairTable.append(thead);
+  const tbody=document.createElement("tbody");e.pairs.forEach(r=>{const tr=document.createElement("tr");[r.high_group,r.low_group,fmt(r.dpd),fmt(r.dir),fmt(r.z),pFmt(r.p),pFmt(r.adjusted_p),r.status].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td);});tbody.append(tr);});pairTable.append(tbody);details.append(pairTable);$("decisions").append(details);
   $("undefined").hidden=!m.undefined.length;$("undefined").textContent=m.undefined.join(" ");
   $("error-section").hidden=m.true_positive_rate===null;
   metricList("error-metrics", [["Equal opportunity difference",fmt(m.equal_opportunity_difference)],["Equalised odds difference",fmt(m.equalised_odds_difference)]]);

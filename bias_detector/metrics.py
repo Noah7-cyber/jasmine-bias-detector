@@ -182,6 +182,46 @@ def calculate_audit(
         "rows_analysed": len(data),
         "settings": asdict(settings),
     }
+    # Keep the original all-group metrics for research reproducibility.
+    eligible = [r for r in rows if r["n"] >= settings.minimum_group_size]
+    for row in rows:
+        row["sample_status"] = "Eligible" if row["n"] >= settings.minimum_group_size else "Insufficient group data"
+    excluded = [r["group"] for r in rows if r["n"] < settings.minimum_group_size]
+    screening = {"excluded_groups": excluded, "eligible_groups": [r["group"] for r in eligible],
+                 "dpd": None, "dir": None, "high_group": None, "low_group": None,
+                 "pairs": [], "message": "Insufficient data: fewer than two eligible groups."}
+    if len(eligible) >= 2:
+        ordered = sorted(eligible, key=lambda r: (exact_rates[r["group"]], r["group"]))
+        lo, hi = ordered[0], ordered[-1]
+        low, high = exact_rates[lo["group"]], exact_rates[hi["group"]]
+        screening.update(dpd=float(high-low), dir=float(low/high) if high else None,
+                         high_group=hi["group"], low_group=lo["group"])
+        # Bonferroni across every eligible pair, including pairs with unavailable tests.
+        comparisons = len(eligible)*(len(eligible)-1)//2
+        for i, a in enumerate(ordered):
+            for b in ordered[i+1:]:
+                pa, pb = exact_rates[a["group"]], exact_rates[b["group"]]
+                x, y = int(pa*a["n"]), int(pb*b["n"])
+                pooled_pair = (x+y)/(a["n"]+b["n"])
+                sparse = min(pooled_pair*a["n"], (1-pooled_pair)*a["n"],
+                             pooled_pair*b["n"], (1-pooled_pair)*b["n"]) < 5
+                test = two_proportion_test(y,b["n"],x,a["n"])
+                raw = test["p_value"] if not sparse else None
+                adjusted = min(1.0, raw*comparisons) if raw is not None else None
+                flag = (pb-pa >= Fraction(str(settings.dpd_threshold)) or
+                        (pb > 0 and pa/pb < Fraction(str(settings.dir_threshold))))
+                status = ("Below screening thresholds" if not flag else
+                          "Potential disparity; statistical support unavailable" if adjusted is None else
+                          "Further investigation recommended" if adjusted < .05 else
+                          "Potential disparity; insufficient statistical evidence")
+                screening["pairs"].append({"high_group": b["group"], "low_group": a["group"],
+                    "dpd": float(pb-pa), "dir": float(pa/pb) if pb else None,
+                    "z": test["z"] if not sparse else None, "p": raw, "adjusted_p": adjusted,
+                    "status": status})
+        screening["message"] = ("Eligible-group screening uses Bonferroni-adjusted two-sided tests; "
+                                "excluded groups remain visible but cannot be reliably assessed. "
+                                "Findings are not proof of discrimination.")
+    metrics["eligible_screening"] = screening
     return {"groups": rows, "metrics": metrics}
 
 

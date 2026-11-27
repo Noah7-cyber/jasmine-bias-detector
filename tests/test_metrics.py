@@ -111,3 +111,22 @@ def test_fairlearn_reference_agreement():
         assert app_group["selection_rate"]==pytest.approx(reference.by_group.loc[group,"selection_rate"],abs=1e-6)
         assert app_group["tpr"]==pytest.approx(reference.by_group.loc[group,"tpr"],abs=1e-6)
         assert app_group["fpr"]==pytest.approx(reference.by_group.loc[group,"fpr"],abs=1e-6)
+
+
+def test_eligible_screening_keeps_small_group_visible():
+    frame = pd.DataFrame({"group": ["A"]*100+["B"]*100+["C"]*5,
+                          "pred": [1]*70+[0]*30+[1]*40+[0]*60+[1]*5})
+    out = calculate_audit(frame, config(true_column=None))
+    e = out["metrics"]["eligible_screening"]
+    assert out["metrics"]["demographic_parity_difference"] == pytest.approx(.6)
+    assert e["excluded_groups"] == ["C"]
+    assert out["groups"][2]["sample_status"] == "Insufficient group data"
+    assert e["dpd"] == pytest.approx(.3)
+    assert e["dir"] == pytest.approx(4/7)
+    assert e["high_group"] == "A" and e["low_group"] == "B"
+    assert e["pairs"][0]["adjusted_p"] < .05
+
+def test_eligible_screening_requires_two_groups():
+    frame = pd.DataFrame({"group": ["A"]*40+["B"]*5, "pred": [1]*45})
+    e = calculate_audit(frame, config(true_column=None))["metrics"]["eligible_screening"]
+    assert e["dpd"] is None and e["pairs"] == []
