@@ -12,7 +12,9 @@ def test_pdf_contains_report_values_without_data_rows():
     with pymupdf.open(stream=pdf,filetype="pdf") as doc:
         text="\n".join(page.get_text() for page in doc)
     compact=" ".join(text.split())
-    assert "Demographic parity difference" in compact
+    assert "All-group DPD" in compact
+    assert "Eligible-group screening" in compact
+    assert "Sample status" in compact
     assert "not proof of discrimination" in text
     assert "Group A" in text
     assert "Generated (UTC)" in text
